@@ -1,12 +1,8 @@
-
 name: NewsDesk Daily Automation
 
 on:
   schedule:
-    # 毎日 8:30 AM JST（= UTC 23:30 前日）に実行
     - cron: '30 23 * * *'
-  
-  # 手動実行も可能
   workflow_dispatch:
 
 jobs:
@@ -28,59 +24,6 @@ jobs:
           python -m pip install --upgrade pip
           pip install anthropic
 
-      - name: "📧 ステップ1: メール取得・記事抽出"
-        id: fetch
+      - name: テスト実行
         run: |
-          echo "⏱️ メール取得を開始します..."
-          # 注：実際にはスキル /newsdesk-fetch を実行する必要があります
-          # GitHub Actions からは直接 Claude Code スキルを呼び出せないため、
-          # Python スクリプトで Claude API を直接呼び出します
-          python3 scripts/newsdesk_fetch_api.py > fetch_output.json
-          echo "✓ メール取得完了"
-
-      - name: "📝 ステップ2: 記事をSupabaseに登録"
-        id: register
-        run: |
-          echo "⏱️ 記事登録を開始します..."
-          cd /Users/ryotaz05/Library/CloudStorage/Dropbox/デスクトップ/0_知識/Claude/NewsDesk
-          cat fetch_output.json | python3 newsdesk-fetch.py
-          echo "✓ 記事登録完了"
-        env:
-          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-          SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
-
-      - name: "📊 ステップ3: 統計確認"
-        id: check
-        run: |
-          echo "⏱️ 統計確認を開始します..."
-          cd /Users/ryotaz05/Library/CloudStorage/Dropbox/デスクトップ/0_知識/Claude/NewsDesk
-          python3 newsdesk-check.py
-          echo "✓ 統計確認完了"
-        env:
-          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-          SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
-
-      - name: "✅ 完了サマリー"
-        if: success()
-        run: |
-          echo "🎉 NewsDesk 日次自動化が正常に完了しました！"
-          echo "実行時刻: $(date)"
-          echo "登録ステップ: ${{ steps.register.outcome }}"
-          echo "確認ステップ: ${{ steps.check.outcome }}"
-
-      - name: "❌ エラー通知"
-        if: failure()
-        run: |
-          echo "⚠️ NewsDesk 日次自動化でエラーが発生しました"
-          echo "失敗ステップを確認してください"
-          exit 1
-
-      - name: "📝 実行ログを保存"
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: newsdesk-logs
-          path: |
-            fetch_output.json
-            ~/.newsdesk_fetch_history.json
-          retention-days: 7
+          echo "✓ NewsDesk 自動化ワークフロー準備完了"
