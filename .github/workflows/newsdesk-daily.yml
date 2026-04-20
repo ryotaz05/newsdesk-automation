@@ -77,7 +77,7 @@ jobs:
 
       - name: "📝 実行ログを保存"
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: newsdesk-logs
           path: |
